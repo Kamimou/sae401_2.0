@@ -6,18 +6,22 @@ use App\Repository\RegionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RegionRepository::class)]
 class Region
 {
     #[ORM\Id]
     #[ORM\Column(length: 3)]
+    #[Groups(['departement', 'region'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['departement', 'region'])]
     private ?string $nom = null;
 
     #[ORM\OneToMany(mappedBy: 'codeRegion', targetEntity: Departement::class)]
+    #[Groups(['region'])]
     private Collection $departements;
 
     public function __construct()

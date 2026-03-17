@@ -6,15 +6,18 @@ use App\Repository\DepartementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: DepartementRepository::class)]
 class Departement
 {
     #[ORM\Id]
     #[ORM\Column(length: 3)]
+    #[Groups(['logement', 'departement', 'region'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['logement', 'departement', 'region'])]
     private ?string $nom = null;
 
     #[ORM\ManyToOne(inversedBy: 'departements')]
@@ -23,12 +26,14 @@ class Departement
         referencedColumnName: "code",
         nullable: false
     )]
+    #[Groups(['departement'])]
     private ?Region $codeRegion = null;
 
     /**
      * @var Collection<int, StatistiqueLogement>
      */
     #[ORM\OneToMany(targetEntity: StatistiqueLogement::class, mappedBy: 'departement')]
+    #[Groups(['departement', 'region'])]
     private Collection $statistiqueLogements;
 
     public function __construct()
@@ -90,7 +95,6 @@ class Departement
     public function removeStatistiqueLogement(StatistiqueLogement $statistiqueLogement): static
     {
         if ($this->statistiqueLogements->removeElement($statistiqueLogement)) {
-            // set the owning side to null (unless already changed)
             if ($statistiqueLogement->getDepartement() === $this) {
                 $statistiqueLogement->setDepartement(null);
             }

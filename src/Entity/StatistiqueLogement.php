@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\StatistiqueLogementRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: StatistiqueLogementRepository::class)]
 class StatistiqueLogement
@@ -11,19 +12,24 @@ class StatistiqueLogement
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['logement', 'departement', 'region'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['logement', 'departement', 'region'])]
     private ?float $construction = null;
 
     #[ORM\Column]
+    #[Groups(['logement', 'departement', 'region'])]
     private ?int $nombreLogement = null;
 
     #[ORM\ManyToOne(inversedBy: 'statistiqueLogements')]
     #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code')]
+    #[Groups(['logement'])]
     private ?Departement $departement = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
     private ?int $logementsMisEnLocation = null;
 
     public function getId(): ?int
@@ -39,7 +45,6 @@ class StatistiqueLogement
     public function setConstruction(float $construction): static
     {
         $this->construction = $construction;
-
         return $this;
     }
 
@@ -51,7 +56,6 @@ class StatistiqueLogement
     public function setNombreLogement(int $nombreLogement): static
     {
         $this->nombreLogement = $nombreLogement;
-
         return $this;
     }
 
@@ -63,7 +67,6 @@ class StatistiqueLogement
     public function setDepartement(?Departement $departement): static
     {
         $this->departement = $departement;
-
         return $this;
     }
 
@@ -75,7 +78,6 @@ class StatistiqueLogement
     public function setLogementsMisEnLocation(?int $logementsMisEnLocation): static
     {
         $this->logementsMisEnLocation = $logementsMisEnLocation;
-
         return $this;
     }
 }
