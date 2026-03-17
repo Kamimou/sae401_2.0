@@ -1,0 +1,18 @@
+<h1>Statistiques logements</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Département</th>
+      <th>Nombre logements</th>
+      <th>Construction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let logement of logements">
+      <td>{{ logement.departement?.nom }}</td>
+      <td>{{ logement.nombreLogement }}</td>
+      <td>{{ logement.construction }}</td>
+    </tr>
+  </tbody>
+</table>
