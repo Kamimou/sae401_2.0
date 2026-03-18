@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private readonly baseUrl = 'http://127.0.0.1:8000';
+  // Symfony local web server defaults to HTTPS; avoid an HTTP -> HTTPS redirect which breaks CORS.
+  private readonly baseUrl = 'https://127.0.0.1:8000';
 
   constructor(private http: HttpClient) {}
 

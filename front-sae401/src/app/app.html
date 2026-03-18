@@ -1,5 +1,8 @@
 <h1>Statistiques logements</h1>
 
+<div *ngIf="errorMessage()" class="error">Erreur : {{ errorMessage() }}</div>
+<div *ngIf="!errorMessage() && logements().length === 0">Chargement…</div>
+
 <table>
   <thead>
     <tr>
@@ -9,7 +12,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let logement of logements">
+    <tr *ngFor="let logement of logements()">
       <td>{{ logement.departement?.nom }}</td>
       <td>{{ logement.nombreLogement }}</td>
       <td>{{ logement.construction }}</td>
