@@ -1,0 +1,17 @@
+<section class="graph-page">
+  <h1>Graphique des logements</h1>
+
+  <p *ngIf="erreur()" class="error">{{ erreur() }}</p>
+
+  <div *ngIf="logements().length > 0; else chargement">
+    <ul>
+      <li *ngFor="let logement of logements()">
+        {{ logement.departement?.nom || logement.nom }} - {{ logement.nombreLogement ?? logement.valeur }}
+      </li>
+    </ul>
+  </div>
+
+  <ng-template #chargement>
+    <p>Chargement des données…</p>
+  </ng-template>
+</section>

@@ -5,7 +5,7 @@
   </div>
 
   <ul class="navbar-links">
-    <li><a href="#" class="active">Accueil</a></li>
-    <li><a href="#">Graphique</a></li>
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a></li>
+    <li><a routerLink="/graph" routerLinkActive="active">Graphique</a></li>
   </ul>
 </nav>
