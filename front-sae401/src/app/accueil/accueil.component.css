@@ -1,0 +1,29 @@
+.accueil-header {
+  background: #005f73;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  margin: 0;
+  width: 100%;
+}
+
+.accueil-main {
+  padding: 1.5rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.accueil-main h2 {
+  margin-top: 0;
+}
+
+.accueil-footer {
+  background: #94d2bd;
+  color: #003049;
+  padding: .75rem;
+  text-align: center;
+  margin-top: auto;
+  width: 100%;
+}
+

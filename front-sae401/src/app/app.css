@@ -1,0 +1,40 @@
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+  width: 100%;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+.statistiques {
+  width: 100%;
+  max-width: 900px;
+  margin: 0;
+  padding: 1rem;
+}
+
+.statistiques h1 {
+  margin-top: 0;
+}
+
+.statistiques table {
+  width: 95%;
+  max-width: 900px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.statistiques th,
+.statistiques td {
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+}
+
+.statistiques tr:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
