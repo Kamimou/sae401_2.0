@@ -16,3 +16,7 @@ app-root {
   flex-direction: column;
   width: 100%;
 }
+
+main {
+  flex: 1;
+}
