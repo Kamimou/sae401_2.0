@@ -1,0 +1,46 @@
+/* navbar */
+.nav{
+    background-color: #0096C7;
+    color: white;
+    list-style: none;
+    font-weight: 500;
+    display:flex;
+    padding: 0.5rem 2%;
+    margin: 0;
+    font-size: 20px;
+}
+
+.link{
+    text-decoration: none;
+    color : inherit;
+    padding: 0 15px 0 15px;
+}
+
+/* pour retirer le soulignage bleu */
+a,
+a:visited,
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+    color: inherit;
+    outline: none;
+}
+
+
+.onglet{
+    padding: 2%;
+    margin-right:  20%;
+}
+
+.onglet1{
+    padding: 2%;
+    margin-left:  20%;
+}
+
+.ol{
+    display: flex;
+    justify-content: left;
+    margin-right: 55%;
+    align-self: flex-end;
+}

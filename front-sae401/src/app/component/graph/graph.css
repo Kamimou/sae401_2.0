@@ -1,0 +1,144 @@
+/* global container (same as home component) */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* page container that sits under the header (do not modify header/footer) */
+.page-container {
+    position: relative;
+    /* needed for absolute child */
+    padding: 60px 80px 60px;
+    /* title/search back up near top */
+    padding-bottom: 120px;
+    /* avoid overlap with fixed footer */
+    box-sizing: border-box;
+}
+
+.title {
+    text-align: center;
+    font-size: 52px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: #023E8A;
+}
+
+.search-container {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.content-layout {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 48px;
+    /* take full viewport height minus header/footer so left card can expand */
+    min-height: calc(100vh - 160px);
+    padding-left: 460px;
+    /* make room for absolute card */
+}
+
+/* typography and spacing */
+.search {
+    position: relative;
+    width: 600px;
+}
+
+.search input {
+    width: 100%;
+    padding: 10px 14px 10px 44px;
+    border: 2px solid #03045E;
+    border-radius: 28px;
+    font-size: 0.95rem;
+    background: #fff;
+}
+
+.search::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg fill="%2315639c" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.29 13.71l5 5a1 1 0 001.42-1.42l-5-5A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg>');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+
+/* menu inside sidebar */
+.menu-title {
+    background: #15639c;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #023E8A;
+    font-size: 1.4rem;
+    line-height: 1.8;
+}
+
+.menu ul li {
+    margin-bottom: 1rem;
+}
+
+.separator {
+    height: 6px;
+    display: block;
+    background: #03045E;
+    margin: 1.4rem 0;
+    width: 60%;
+}
+
+.left-card {
+    width: 440px;
+    padding: 32px 36px;
+    border: 2px solid #03045E;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 220px;
+    /* push card further down */
+    /* stretch full available height */
+    height: calc(100vh - 260px);
+    max-height: none;
+}
+
+/* decorative vertical tag stripe on card */
+.left-card::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 20px;
+    bottom: 20px;
+    width: 6px;
+    background: #03045E;
+    border-radius: 3px;
+}
+
+.graph-area {
+    /* do not force height; allow content to define size */
+    margin-left: 0;
+    flex: 1;
+    box-sizing: border-box;
+    min-height: 500px;
+    /* background removed as requested */
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+}
