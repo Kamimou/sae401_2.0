@@ -32,6 +32,10 @@ class StatistiqueLogement
     #[Groups(['logement', 'departement', 'region'])]
     private ?int $logementsMisEnLocation = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
+    private ?float $tauxPauvrete = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,6 +82,18 @@ class StatistiqueLogement
     public function setLogementsMisEnLocation(?int $logementsMisEnLocation): static
     {
         $this->logementsMisEnLocation = $logementsMisEnLocation;
+        return $this;
+    }
+
+    public function getTauxPauvrete(): ?float
+    {
+        return $this->tauxPauvrete;
+    }
+
+    public function setTauxPauvrete(?float $tauxPauvrete): static
+    {
+        $this->tauxPauvrete = $tauxPauvrete;
+
         return $this;
     }
 }
