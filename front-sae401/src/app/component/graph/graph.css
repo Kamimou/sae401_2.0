@@ -8,7 +8,9 @@ body {
 .title {
   text-align: center;
   color: #2c5d7c;
-  margin: 20px 0;
+  margin: 20px 10px;
+  margin-left: 280px;
+  font-weight: bold;
 }
 
 /* Layout global */
@@ -27,15 +29,24 @@ body {
 
 /* Search */
 .search-container {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .search {
   width: 100%;
-  padding: 8px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #334155;
+  color: rgb(255, 255, 255);
+  font-size: 14px;
 }
+
+.search::placeholder {
+  color: #ffffff;
+}
+
 
 /* Menu */
 .menu div {
