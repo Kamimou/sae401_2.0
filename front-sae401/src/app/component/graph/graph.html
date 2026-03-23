@@ -4,63 +4,60 @@
 
   <aside class="sidebar">
 
-  <!-- Recherche -->
-  <div class="search-container">
-    <input class="search" placeholder="Recherche" />
-  </div>
-
-  <!-- TAGS -->
-  <div class="tags">
-    <div 
-      *ngFor="let tag of tags" 
-      (click)="selectTag(tag)"
-      [class.active]="selectedTag === tag"
-      class="tag">
-      
-      {{ tag.label }}
+    <!-- Recherche -->
+    <div class="search-container">
+      <input 
+        [ngModel]="searchTerm()" 
+        (ngModelChange)="searchTerm.set($event)"
+        class="search" 
+        placeholder="Rechercher département (nom ou code)" />
     </div>
-  </div>
 
-</aside>
+    <!-- Liste départements -->
+    <div class="departements-list">
+      <div *ngFor="let dept of departementsFiltres()" 
+           (click)="selectDepartement(dept)"
+           [class.active]="selectedDepartement()?.code === dept.code"
+           class="departement-item">
+        <strong>{{ dept.code }}</strong> {{ dept.nom }}
+      </div>
+      <div *ngIf="departementsFiltres().length === 0" class="no-results">
+        Aucun département trouvé
+      </div>
+    </div>
+
+    <button *ngIf="selectedDepartement() || searchTerm()" 
+            (click)="clearFilter()" 
+            class="clear-btn">
+      Tout afficher
+    </button>
+
+  </aside>
 
   <!-- Contenu principal -->
   <main class="page-container">
 
-    <h2 class="section-title">Indicateurs démographiques</h2>
+    <h2 class="section-title">
+      Logements {{ selectedDepartement() ? '- ' + selectedDepartement()?.nom : '' }}
+      ({{ logementsFiltres().length }})
+    </h2>
 
     <div class="container">
       
-      <!-- TON CODE (inchangé) -->
       <div *ngIf="errorMessage()" class="error">
         Erreur : {{ errorMessage() }}
       </div>
 
-      <div *ngIf="!errorMessage() && logements().length === 0">
-        Chargement...
+      <div *ngIf="!errorMessage() && logementsFiltres().length === 0">
+        {{ searchTerm() || selectedDepartement() ? 'Aucun résultat' : 'Chargement...' }}
       </div>
 
-      <div *ngIf="!errorMessage() && logements().length > 0" class="chart-wrapper">
-        <canvas #indicDemo id="myCanvas" width="550" height="550"></canvas>
+      <div *ngIf="!errorMessage() && logementsFiltres().length > 0" class="chart-wrapper">
+        <canvas #indicDemo width="550" height="550"></canvas>
       </div>
 
     </div>
 
   </main>
 </div>
-            
-            <!--table *ngIf="!errorMessage() && logements().length > 0">
-            <thead>
-                <tr>
-                    <th>Departement</th>
-                    <th>Nombre logements</th>
-                    <th>Construction</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let logement of logements()">
-                    <td>{{ logement.departement?.nom }}</td>
-                    <td>{{ logement.nombreLogement }}</td>
-                    <td>{{ logement.construction }}</td>
-                </tr>
-            </tbody>
-            </table-->
+
