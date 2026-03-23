@@ -38,6 +38,49 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
     private cdr = inject(ChangeDetectorRef);
     private chart: Chart | null = null;
 
+
+// Système de tags pour changer les données du graphique
+    tags = [
+  { key: 'demo', label: 'Indicateurs démographiques' },
+  { key: 'socio', label: 'Indicateurs socio-économiques' },
+  { key: 'logement', label: 'Logement / habitat' }
+];
+
+selectedTag = this.tags[0];
+
+selectTag(tag: any) {
+  this.selectedTag = tag;
+  this.updateChart();
+}
+
+updateChart() {
+  let data;
+
+  switch (this.selectedTag.key) {
+    case 'demo':
+      data = [11, 22, 34, 11, 11];
+      break;
+
+    case 'socio':
+      data = [5, 15, 40, 20, 20];
+      break;
+
+    case 'logement':
+      data = [30, 10, 25, 15, 20];
+      break;
+  }
+
+  // recréer le chart
+  new Chart("myCanvas", {
+    type: 'pie',
+    data: {
+      labels: ['A', 'B', 'C', 'D', 'E'],
+      datasets: [{
+        data: data
+      }]
+    }
+  });
+}
     
     
     // Récupère les données des logements

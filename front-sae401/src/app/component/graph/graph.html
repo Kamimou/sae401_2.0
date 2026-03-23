@@ -1,18 +1,52 @@
 <h1 class="title">Analyse des indicateurs du logement social</h1>
-<main class="page-container">
+
+<div class="layout">
+
+  <aside class="sidebar">
+
+  <!-- Recherche -->
+  <div class="search-container">
+    <input class="search" placeholder="Recherche" />
+  </div>
+
+  <!-- TAGS -->
+  <div class="tags">
+    <div 
+      *ngFor="let tag of tags" 
+      (click)="selectTag(tag)"
+      [class.active]="selectedTag === tag"
+      class="tag">
+      
+      {{ tag.label }}
+    </div>
+  </div>
+
+</aside>
+
+  <!-- Contenu principal -->
+  <main class="page-container">
+
+    <h2 class="section-title">Indicateurs démographiques</h2>
+
     <div class="container">
-        <div class="search-container">
-            <div class="search">
-                <input placeholder="Recherche" />
-            </div>
-        </div>
-            
-            <div *ngIf="errorMessage()" class="error">Erreur : {{ errorMessage() }}</div>
-            <div *ngIf="!errorMessage() && logements().length === 0">Chargement...</div>
-            
-            <div *ngIf="!errorMessage() && logements().length > 0" class="chart-wrapper">
-                <canvas #indicDemo id="myCanvas" width="550" height="550"></canvas>
-            </div>
+      
+      <!-- TON CODE (inchangé) -->
+      <div *ngIf="errorMessage()" class="error">
+        Erreur : {{ errorMessage() }}
+      </div>
+
+      <div *ngIf="!errorMessage() && logements().length === 0">
+        Chargement...
+      </div>
+
+      <div *ngIf="!errorMessage() && logements().length > 0" class="chart-wrapper">
+        <canvas #indicDemo id="myCanvas" width="550" height="550"></canvas>
+      </div>
+
+    </div>
+
+  </main>
+</div>
             
             <!--table *ngIf="!errorMessage() && logements().length > 0">
             <thead>

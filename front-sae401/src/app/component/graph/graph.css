@@ -1,144 +1,102 @@
-/* global container (same as home component) */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
 }
 
-/* page container that sits under the header (do not modify header/footer) */
-.page-container {
-    position: relative;
-    /* needed for absolute child */
-    padding: 60px 80px 60px;
-    /* title/search back up near top */
-    padding-bottom: 120px;
-    /* avoid overlap with fixed footer */
-    box-sizing: border-box;
-}
-
+/* Titre principal */
 .title {
-    text-align: center;
-    font-size: 52px;
-    font-weight: 600;
-    margin-bottom: 40px;
-    color: #023E8A;
+  text-align: center;
+  color: #2c5d7c;
+  margin: 20px 0;
 }
 
+/* Layout global */
+.layout {
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: white;
+  border-right: 2px solid #ddd;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Search */
 .search-container {
-    margin-bottom: 40px;
-    display: flex;
-    justify-content: center;
+  margin-bottom: 20px;
 }
 
-.content-layout {
-    display: flex;
-    justify-content: flex-start;
-    align-items: stretch;
-    gap: 48px;
-    /* take full viewport height minus header/footer so left card can expand */
-    min-height: calc(100vh - 160px);
-    padding-left: 460px;
-    /* make room for absolute card */
-}
-
-/* typography and spacing */
 .search {
-    position: relative;
-    width: 600px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
 }
 
-.search input {
-    width: 100%;
-    padding: 10px 14px 10px 44px;
-    border: 2px solid #03045E;
-    border-radius: 28px;
-    font-size: 0.95rem;
-    background: #fff;
+/* Menu */
+.menu div {
+  padding: 10px;
+  cursor: pointer;
 }
 
-.search::before {
-    content: '';
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    background-image: url('data:image/svg+xml;charset=UTF-8,<svg fill="%2315639c" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.29 13.71l5 5a1 1 0 001.42-1.42l-5-5A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg>');
-    background-repeat: no-repeat;
-    background-size: contain;
+.menu .active {
+  border-bottom: 3px solid #2c5d7c;
+  font-weight: bold;
 }
 
-
-/* menu inside sidebar */
-.menu-title {
-    background: #15639c;
-    color: #fff;
-    padding: 1rem 1.5rem;
-    border-radius: 999px;
-    display: inline-block;
-    margin-bottom: 1.5rem;
-    font-size: 1.3rem;
+/* Contenu */
+.page-container {
+  flex: 1;
+  padding: 30px;
+  text-align: center;
 }
 
-.menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    color: #023E8A;
-    font-size: 1.4rem;
-    line-height: 1.8;
+/* Titre section */
+.section-title {
+  display: inline-block;
+  background: #2c5d7c;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  margin-bottom: 30px;
 }
 
-.menu ul li {
-    margin-bottom: 1rem;
+/* Graphique */
+.chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.separator {
-    height: 6px;
-    display: block;
-    background: #03045E;
-    margin: 1.4rem 0;
-    width: 60%;
+/* Erreur */
+.error {
+  color: red;
+  font-weight: bold;
+}
+.tags {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.left-card {
-    width: 440px;
-    padding: 32px 36px;
-    border: 2px solid #03045E;
-    border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    position: absolute;
-    left: 0;
-    top: 220px;
-    /* push card further down */
-    /* stretch full available height */
-    height: calc(100vh - 260px);
-    max-height: none;
+.tag {
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: #f1f1f1;
+  transition: 0.3s;
 }
 
-/* decorative vertical tag stripe on card */
-.left-card::before {
-    content: '';
-    position: absolute;
-    left: -6px;
-    top: 20px;
-    bottom: 20px;
-    width: 6px;
-    background: #03045E;
-    border-radius: 3px;
+.tag:hover {
+  background: #dbeafe;
 }
 
-.graph-area {
-    /* do not force height; allow content to define size */
-    margin-left: 0;
-    flex: 1;
-    box-sizing: border-box;
-    min-height: 500px;
-    /* background removed as requested */
-    background: transparent;
-    border-radius: 0;
-    padding: 0;
+.tag.active {
+  background: #2c5d7c;
+  color: white;
+  font-weight: bold;
 }
