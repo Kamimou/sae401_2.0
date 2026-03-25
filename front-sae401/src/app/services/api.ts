@@ -17,4 +17,8 @@ export class ApiService {
   getDepartements(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/statistique/departement`);
   }
+
+  getTauxPauvrete(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/statistique/taux_pauvrete`);
+  }
 }

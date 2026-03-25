@@ -1,0 +1,147 @@
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #f5f7fa, #e4ecf3);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Titre principal */
+.title {
+    text-align: center;
+    color: #2c5d7c;
+    margin: 20px 10px;
+    margin-left: 280px;
+    font-weight: bold;
+}
+
+/* Layout global */
+.layout {
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: white;
+    border-right: 2px solid #ddd;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Search */
+.search-container {
+    margin-bottom: 15px;
+}
+
+.search {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: #334155;
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+}
+
+.search::placeholder {
+    color: #ffffff;
+}
+
+
+/* Menu */
+.menu div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.menu .active {
+    border-bottom: 3px solid #2c5d7c;
+    font-weight: bold;
+}
+
+/* Contenu */
+.page-container {
+    flex: 1;
+    padding: 30px;
+    text-align: center;
+}
+
+/* Titre section */
+.section-title {
+    display: inline-block;
+    background: #2c5d7c;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+/* Graphique */
+.chart-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Erreur */
+.error {
+    text-align: center;
+    color: #94a3b8;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.tags {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tag {
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    background: #f1f1f1;
+    transition: 0.3s;
+}
+
+.tag:hover {
+    background: #dbeafe;
+}
+
+.tag.active {
+    background: #2c5d7c;
+    color: white;
+    font-weight: bold;
+}
+
+.clear-btn {
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.clear-btn:hover {
+    background: linear-gradient(135deg, #5aa0f2, #2f6fb0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.clear-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.clear-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}

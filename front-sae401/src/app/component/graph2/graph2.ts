@@ -14,63 +14,62 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart } from 'chart.js/auto';
 import { ApiService } from '../../services/api';
-import { Graph2 } from "../graph2/graph2";
 
-type Logement = {
+type TauxPauvrete = {
     departement?: { nom?: string; code?: string };
-    nombreLogement?: number | string | null;
-    construction?: number | string | null;
+    tauxPauvrete?: number | string | null;
+    taux_pauvrete?: number | string | null;
 };
 
 @Component({
+    selector: 'app-graph2',
     standalone: true,
-    selector: 'app-graph',
-    imports: [CommonModule, FormsModule, Graph2],
-    templateUrl: './graph.html',
-    styleUrls: ['./graph.css'],
+    imports: [CommonModule, FormsModule],
+    templateUrl: './graph2.html',
+    styleUrl: './graph2.css',
 })
-export class Graph implements OnInit, AfterViewInit, OnDestroy {
-    @ViewChild('indicDemo') canvas?: ElementRef<HTMLCanvasElement>;
-    
-    logements = signal<Logement[]>([]);
-    logementsFiltres = signal<Logement[]>([]);
+export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild('tauxP') canvas?: ElementRef<HTMLCanvasElement>;
+
+    taux_pauvrete = signal<TauxPauvrete[]>([]);
+    taux_pauvreteFiltres = signal<TauxPauvrete[]>([]);
     departements = signal<any[]>([]);
     departementsFiltres = signal<any[]>([]);
     searchTerm = signal('');
     selectedDepartement = signal<any | null>(null);
     errorMessage = signal<string | null>(null);
-    
+
     private api = inject(ApiService);
     private cdr = inject(ChangeDetectorRef);
     private chart: Chart | null = null;
-    
+
     constructor() {
         // Filtre recherche départements temps réel
         effect(() => {
             const term = this.searchTerm().toLowerCase();
             const all = this.departements();
             this.departementsFiltres.set(
-                all.filter(dept => 
-                    dept.nom?.toLowerCase().includes(term) || 
+                all.filter(dept =>
+                    dept.nom?.toLowerCase().includes(term) ||
                     dept.code?.toLowerCase().includes(term)
                 )
             );
         });
-        
-        // Mise à jour chart quand logementsFiltres change
+
+        // Mise à jour chart quand taux_pauvreteFiltres change
         effect(() => {
             this.renderChart();
         });
     }
-    
+
     ngOnInit(): void {
         // Load départements
         this.api.getDepartements().subscribe({
             next: (data) => {
                 const departementsRecus = Array.isArray(data)
-                ? data
-                : (data as any)?.['hydra:member'] || (data as any)?.departements || [];
-                
+                    ? data
+                    : (data as any)?.['hydra:member'] || (data as any)?.departements || [];
+
                 this.departements.set(departementsRecus);
                 this.departementsFiltres.set(departementsRecus);
             },
@@ -78,12 +77,12 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
                 console.error('Erreur départements:', err);
             }
         });
-        
-        // Load logements
+
+        // Réutilise l'endpoint existant logement qui expose aussi tauxPauvrete.
         this.api.getLogements().subscribe({
             next: (data) => {
-                this.logements.set(data ?? []);
-                this.logementsFiltres.set(data ?? []);
+                this.taux_pauvrete.set(data ?? []);
+                this.taux_pauvreteFiltres.set(data ?? []);
                 this.cdr.detectChanges();
             },
             error: (err) => {
@@ -91,62 +90,54 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
             },
         });
     }
-    
+
     ngAfterViewInit(): void {
         this.renderChart();
     }
-    
+
     ngOnDestroy(): void {
         this.chart?.destroy();
         this.chart = null;
     }
-    
+
     selectDepartement(dept: any): void {
         this.selectedDepartement.set(dept);
         if (dept) {
-            this.logementsFiltres.set(
-                this.logements().filter(l => l.departement?.code === dept.code)
+            this.taux_pauvreteFiltres.set(
+                this.taux_pauvrete().filter(t => t.departement?.code === dept.code)
             );
         } else {
-            this.logementsFiltres.set(this.logements());
+            this.taux_pauvreteFiltres.set(this.taux_pauvrete());
         }
     }
-    
+
     clearFilter(): void {
         this.searchTerm.set('');
         this.selectedDepartement.set(null);
-        this.logementsFiltres.set(this.logements());
+        this.taux_pauvreteFiltres.set(this.taux_pauvrete());
     }
-    
+
     private renderChart(): void {
         const canvas = this.canvas?.nativeElement;
-        const logementsFiltres = this.logementsFiltres().slice(0, 10);
-        
-        if (!canvas || logementsFiltres.length === 0) return;
-        
-        const labels = logementsFiltres.map(
-            (logement) => logement.departement?.nom ?? 'N/A'
+        const taux_pauvreteFiltres = this.taux_pauvreteFiltres().slice(0, 10);
+
+        if (!canvas || taux_pauvreteFiltres.length === 0) return;
+
+        const labels = taux_pauvreteFiltres.map(
+            (taux) => taux.departement?.nom ?? 'N/A'
         );
-        
-        const nombreLogements = logementsFiltres.map((logement) => Number(logement.nombreLogement ?? 0));
-        const constructions = logementsFiltres.map((logement) => Number(logement.construction ?? 0));
-        
+
+        const taux_pauvrete = taux_pauvreteFiltres.map((taux) => Number(taux.tauxPauvrete ?? taux.taux_pauvrete ?? 0));
+
         this.chart?.destroy();
         this.chart = new Chart(canvas, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels,
                 datasets: [
                     {
-                        label: 'Nombre de logements',
-                        data: nombreLogements,
-                        backgroundColor: '#023E8A',
-                        borderColor: 'black',
-                        borderWidth: 1,
-                    },
-                    {
-                        label: 'Construction',
-                        data: constructions,
+                        label: 'Taux de pauvreté',
+                        data: taux_pauvrete,
                         backgroundColor: '#0096C7',
                         borderColor: 'black',
                         borderWidth: 1,
@@ -180,4 +171,3 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 }
-

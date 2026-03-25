@@ -1,0 +1,22 @@
+<main class="page-container">
+    
+    <h2 class="section-title">
+        Taux de pauvreté {{ selectedDepartement() ? '- ' + selectedDepartement()?.nom : '' }}
+        ({{ taux_pauvreteFiltres().length }})
+    </h2>
+    
+    <div class="container">
+        
+        <div *ngIf="errorMessage()" class="error">
+            Erreur : {{ errorMessage() }}
+        </div>
+        
+        <div *ngIf="!errorMessage() && taux_pauvreteFiltres().length === 0">
+            {{ searchTerm() || selectedDepartement() ? 'Aucun résultat' : 'Chargement...' }}
+        </div>
+        
+        <diV *ngIf="!errorMessage() && taux_pauvreteFiltres().length > 0" class="chart-wrapper">
+            <canvas #tauxP width="350" height="350"></canvas>
+        </diV>
+    </div>
+</main>
