@@ -36,6 +36,18 @@ class StatistiqueLogement
     #[Groups(['logement', 'departement', 'region'])]
     private ?float $tauxPauvrete = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
+    private ?float $tauxChomage = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
+    private ?float $densitePopulation = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
+    private ?float $nombreHabitants = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -93,6 +105,42 @@ class StatistiqueLogement
     public function setTauxPauvrete(?float $tauxPauvrete): static
     {
         $this->tauxPauvrete = $tauxPauvrete;
+
+        return $this;
+    }
+
+    public function getTauxChomage(): ?float
+    {
+        return $this->tauxChomage;
+    }
+
+    public function setTauxChomage(?float $tauxChomage): static
+    {
+        $this->tauxChomage = $tauxChomage;
+
+        return $this;
+    }
+
+    public function getDensitePopulation(): ?float
+    {
+        return $this->densitePopulation;
+    }
+
+    public function setDensitePopulation(?float $densitePopulation): static
+    {
+        $this->densitePopulation = $densitePopulation;
+
+        return $this;
+    }
+
+    public function getNombreHabitants(): ?float
+    {
+        return $this->nombreHabitants;
+    }
+
+    public function setNombreHabitants(?float $nombreHabitants): static
+    {
+        $this->nombreHabitants = $nombreHabitants;
 
         return $this;
     }

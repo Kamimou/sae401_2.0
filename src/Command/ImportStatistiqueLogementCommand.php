@@ -125,7 +125,10 @@ class ImportStatistiqueLogementCommand extends Command
            $stat->setDepartement($departement);
            $stat->setConstruction($this->decimal($data['construction']));
            $stat->setNombreLogement($this->int($data['parc_social_nombre_de_logements']));
-           $stat->setTauxPauvrete($this->decimal($data['taux_de_pauvret_e_en']));
+           $stat->setTauxPauvrete($this->decimal($data['taux_de_pauvret_e_en']));;
+           $stat->setTauxChomage($this->decimal($data['taux_de_ch^omage_au_t4_en']));
+           $stat->setDensitePopulation($this->decimal($data['densit_e_de_population_au_km^2']));
+           $stat->setNombreHabitants($this->decimal($data['nombre_d_habitants']));
 
            $this->em->persist($stat);
 
