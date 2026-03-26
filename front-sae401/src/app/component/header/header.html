@@ -1,8 +1,11 @@
-    <!-- nav bar -->
-    <nav class="bar">
-		<ul class="nav">
-            <img class="ol" src="/logo.png" routerLink="/" width="80" height="80" alt="Logo">
-			<li class="onglet1"><a routerLink="/" class="nav-link active">Accueil</a></li>
-            <li class="onglet"><a routerLink="app-graph" class="nav-link">Graphique</a></li>
-		</ul>
-	</nav>
+<nav class="navbar">
+    <div class="logo-container">
+        <a routerLink="/" title="Accueil">
+            <img src="/logo.png" alt="Logo SAE" class="nav-logo">
+        </a>
+    </div>
+    <ul class="nav-links">
+        <li><a routerLink="/" class="nav-link active" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Accueil</a></li>
+        <li><a routerLink="/app-graph" class="nav-link" routerLinkActive="active">Graphiques</a></li>
+    </ul>
+</nav>

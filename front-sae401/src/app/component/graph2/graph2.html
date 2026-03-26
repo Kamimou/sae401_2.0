@@ -1,42 +1,55 @@
-<main class="page-container">
-    
-    <h2 class="title">
-        Taux de logements vacants + logements en construction/disponibles
-        {{ selectedRegion() ? ' - ' + selectedRegion()?.nom : '' }}
-        {{ selectedDepartement() ? ' / ' + selectedDepartement()?.nom : '' }}
-        ({{ logementsFiltres().length }})
-    </h2>
+<div class="chart-card" style="margin-top: 24px;">
+    <!-- En-tête du deuxième graphique -->
+    <div class="chart-header">
+        <h2 class="chart-title" style="margin-bottom: 16px;">
+            Rénovation ou Construction : Quelle Stratégie ?
+            <!-- On affiche le nom de la région/département choisi dans le titre -->
+            <span *ngIf="selectedRegion()"> - {{ selectedRegion()?.nom }}</span>
+            <span *ngIf="selectedDepartement()"> / {{ selectedDepartement()?.nom }}</span>
+        </h2>
 
-    <div class="search-container" style="max-width: 900px; margin: 0 auto 20px auto; display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px;">
-        <select class="search" [ngModel]="selectedRegion()?.code ?? ''" (ngModelChange)="onRegionChange($event)">
-            <option value="">Toutes les régions</option>
-            <option *ngFor="let region of regions()" [value]="region.code">
-                {{ region.nom }}
-            </option>
-        </select>
+        <!-- Filtres locaux spécifiques au deuxième graphique -->
+        <div class="search-container" style="display: flex; gap: 16px; margin-bottom: 24px;">
+            <!-- Select pour choisir une Région -->
+            <select class="search-input" style="width: auto; margin-bottom: 0;" [ngModel]="selectedRegion()?.code ?? ''"
+                (ngModelChange)="onRegionChange($event)">
+                <option value="">Toutes les régions</option>
+                <option *ngFor="let region of regions()" [value]="region.code">
+                    {{ region.nom }}
+                </option>
+            </select>
 
-        <select class="search" [ngModel]="selectedDepartement()?.code ?? ''" (ngModelChange)="onDepartementChange($event)">
-            <option value="">Tous les départements</option>
-            <option *ngFor="let dept of departementsFiltres()" [value]="dept.code">
-                {{ dept.code }} - {{ dept.nom }}
-            </option>
-        </select>
+            <!-- Select pour choisir un Département -->
+            <select class="search-input" style="width: auto; margin-bottom: 0;"
+                [ngModel]="selectedDepartement()?.code ?? ''" (ngModelChange)="onDepartementChange($event)">
+                <option value="">Tous les départements</option>
+                <option *ngFor="let dept of departementsFiltres()" [value]="dept.code">
+                    {{ dept.nom }} ({{ dept.code }})
+                </option>
+            </select>
 
-        <button class="clear-btn" (click)="clearFilter()">Réinitialiser</button>
-    </div>
-    
-    <div class="container">
-        
-        <div *ngIf="errorMessage()" class="error">
-            Erreur : {{ errorMessage() }}
+            <!-- Bouton de reset local -->
+            <button class="btn-secondary" style="margin-top: 0; width: auto;" (click)="clearFilter()">
+                Réinitialiser les filtres
+            </button>
         </div>
-        
-        <div *ngIf="!errorMessage() && logementsFiltres().length === 0">
-            {{ selectedRegion() || selectedDepartement() ? 'Aucun résultat' : 'Chargement...' }}
-        </div>
-        
-        <diV *ngIf="!errorMessage() && logementsFiltres().length > 0" class="chart-wrapper">
-            <canvas #tauxP width="450" height="450"></canvas>
-        </diV>
     </div>
-</main>
+
+    <!-- Zone de rendu pour le graphique 2 -->
+    <div class="canvas-container">
+        <!-- Message d'erreur -->
+        <div *ngIf="errorMessage()" class="alert alert-error">
+            {{ errorMessage() }}
+        </div>
+
+        <!-- Message de chargement ou d'absence de données -->
+        <div *ngIf="!errorMessage() && logementsFiltres().length === 0" class="empty-state">
+            {{ selectedRegion() || selectedDepartement() ? 'Aucune donnée pour cette sélection.' : 'Chargement...' }}
+        </div>
+
+        <!-- Zone du Canvas (dessin Chart.js) -->
+        <div *ngIf="!errorMessage() && logementsFiltres().length > 0">
+            <canvas #tauxP></canvas>
+        </div>
+    </div>
+</div>

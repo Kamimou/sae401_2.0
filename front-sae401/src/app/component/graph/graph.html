@@ -1,103 +1,115 @@
-<h1 class="title">📊 Taux de logements sociaux / taux de chômage par région</h1>
-
-<div class="layout">
-  <!-- Sidebar filtres améliorée -->
-  <aside class="sidebar">
-    
-    <!-- Section Régions -->
-    <div class="filter-section">
-      <h4>🌍 Régions</h4>
-      <div class="search-container">
-        <input 
-          [ngModel]="searchRegionTerm()" 
-          (ngModelChange)="searchRegionTerm.set($event)"
-          class="search" 
-          placeholder="Rechercher région..." />
-      </div>
-      <div class="filter-list">
-        <div *ngFor="let region of regionsFiltres()" 
-             class="filter-item"
-             [class.active]="selectedRegion()?.code === region.code"
-             (click)="selectRegion(region)">
-          <strong>{{ region.code }}</strong> {{ region.nom }}
-        </div>
-        <div *ngIf="regionsFiltres().length === 0" class="no-results">
-          Pas de région trouvée
-        </div>
-      </div>
+<div class="dashboard-container">
+  <!-- En-tête de la page : Titre et introduction du projet -->
+  <header class="dashboard-header">
+    <div class="header-text">
+      <h1 class="page-title">Projet Aménagement : Réduire la Fracture au Logement</h1>
+      <p class="page-subtitle">Analyse de données (Data) pour guider nos actions : où construire, rénover, ou aider en
+        priorité ?</p>
     </div>
+  </header>
 
-    <!-- Section Départements -->
-    <div class="filter-section">
-      <h4>🏛️ Départements</h4>
-      <div class="search-container">
-        <input 
-          [ngModel]="searchTerm()" 
-          (ngModelChange)="searchTerm.set($event)"
-          class="search" 
-          placeholder="Rechercher département..." />
+  <div class="layout">
+    <!-- Barre latérale (Sidebar) pour les filtres interactifs -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3>Filtres Géographiques</h3>
       </div>
-      <div class="filter-list">
-        <div *ngFor="let dept of departementsFiltres()" 
-             class="filter-item"
-             [class.active]="selectedDepartement()?.code === dept.code"
-             (click)="selectDepartement(dept)">
-          <strong>{{ dept.code }}</strong>{{ dept.nom }}
+
+      <!-- Recherche par Région -->
+      <div class="filter-section">
+        <label class="section-label">Région</label>
+        <div class="search-container">
+          <!-- Liaison avec le signal searchRegionTerm du fichier .ts -->
+          <input [ngModel]="searchRegionTerm()" (ngModelChange)="searchRegionTerm.set($event)" class="search-input"
+            placeholder="Rechercher une région..." />
         </div>
-        <div *ngIf="departementsFiltres().length === 0" class="no-results">
-          Pas de département trouvé
+        <div class="filter-list">
+          <!-- On boucle sur les régions trouvées -->
+          <div *ngFor="let region of regionsFiltres()" class="filter-item"
+            [class.active]="selectedRegion()?.code === region.code" (click)="selectRegion(region)">
+            <span class="item-code">{{ region.code }}</span>
+            <span class="item-name">{{ region.nom }}</span>
+          </div>
+          <!-- Si la recherche ne donne rien -->
+          <div *ngIf="regionsFiltres().length === 0" class="no-results">
+            Aucune région trouvée.
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Bouton reset -->
-    <button class="clear-btn" 
-            *ngIf="selectedRegion() || selectedDepartement()"
-            (click)="clearFilters()">
-      🔄 Réinitialiser
-    </button>
-  </aside>
+      <!-- Recherche par Département -->
+      <div class="filter-section">
+        <label class="section-label">Département</label>
+        <div class="search-container">
+          <input [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" class="search-input"
+            placeholder="Rechercher un département..." />
+        </div>
+        <div class="filter-list">
+          <div *ngFor="let dept of departementsFiltres()" class="filter-item"
+            [class.active]="selectedDepartement()?.code === dept.code" (click)="selectDepartement(dept)">
+            <span class="item-code">{{ dept.code }}</span>
+            <span class="item-name">{{ dept.nom }}</span>
+          </div>
+          <div *ngIf="departementsFiltres().length === 0" class="no-results">
+            Aucun département trouvé.
+          </div>
+        </div>
+      </div>
 
-  <!-- Contenu principal -->
-  <main class="page-container">
-    
-    <!-- Summary filtres -->
-    <div class="filters-summary">
-      <h2>Résumé des filtres</h2>
-      <div *ngIf="selectedRegion(); else noFilter">
-        <span class="filter-tag">Région: {{ selectedRegion()?.nom }}</span>
-      </div>
-      <div *ngIf="selectedDepartement(); else noFilter">
-        <span class="filter-tag">Département: {{ selectedDepartement()?.nom }}</span>
-      </div>
-      <span class="filter-count">
-        📈 {{ logementsFiltres().length }} enregistrements disponibles
-      </span>
-      <ng-template #noFilter>
-        <p style="color: #6b7280; font-style: italic;">Aucun filtre actif - Tous les logements</p>
-      </ng-template>
-    </div>
+      <!-- Bouton pour tout remettre à zéro si un filtre est actif -->
+      <button class="btn-secondary" *ngIf="selectedRegion() || selectedDepartement()" (click)="clearFilters()">
+        Réinitialiser les filtres
+      </button>
+    </aside>
 
-    <!-- Titre dynamique -->
-    <h2 class="section-title">
-      {{ getTitreDynamique() }}
-    </h2>
-    
-    <!-- Contenu graphique -->
-    <div class="chart-wrapper">
-      <div *ngIf="errorMessage()" class="error">
-        ⚠️ {{ errorMessage() }}
-      </div>
-      
-      <div *ngIf="logementsFiltres().length === 0 && !errorMessage()" class="no-data">
-        {{ (selectedRegion() || selectedDepartement() || searchTerm() || searchRegionTerm()) ? 
-            'Aucun résultat pour ces filtres' : 'Chargement des données...' }}
-      </div>
-      
-      <canvas #indicDemo *ngIf="logementsFiltres().length > 0"
-              width="800" height="400"></canvas>
-    </div>
+    <!-- Contenu Principal : Résumés et Graphiques -->
+    <main class="main-content">
 
-    <app-graph2></app-graph2>
-  </main>
+      <!-- Petit récapitulatif des filtres sélectionnés -->
+      <div class="filters-summary" *ngIf="selectedRegion() || selectedDepartement()">
+        <span class="summary-label">Vue actuelle :</span>
+        <span class="filter-tag" *ngIf="selectedRegion()">
+          Région : {{ selectedRegion()?.nom }}
+        </span>
+        <span class="filter-tag" *ngIf="selectedDepartement()">
+          Département : {{ selectedDepartement()?.nom }}
+        </span>
+        <span class="data-count">
+          ({{ logementsFiltres().length }} enregistrements)
+        </span>
+      </div>
+
+      <!-- Carte du premier graphique (Barres) -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="chart-title">
+            <!-- Titre qui change dynamiquement selon la sélection -->
+            {{ getTitreDynamique() }}
+          </h2>
+          <p class="chart-subtitle">Comparaison directe entre la précarité (chômage) et la capacité d'accueil locale
+            (logements sociaux).
+          </p>
+        </div>
+
+        <!-- Alerte en cas de problème avec l'API -->
+        <div *ngIf="errorMessage()" class="alert alert-error">
+          {{ errorMessage() }}
+        </div>
+
+        <!-- Message d'attente si aucune donnée n'est chargée -->
+        <div *ngIf="logementsFiltres().length === 0 && !errorMessage()" class="empty-state">
+          {{ (selectedRegion() || selectedDepartement() || searchTerm() || searchRegionTerm()) ?
+          'Aucune donnée disponible pour les critères sélectionnés.' : 'Chargement des données en cours...' }}
+        </div>
+
+        <!-- Le graphique lui-même -->
+        <div class="canvas-container">
+          <canvas #indicDemo *ngIf="logementsFiltres().length > 0"></canvas>
+        </div>
+      </div>
+
+      <!-- On appelle ici le deuxième composant graphique -->
+      <app-graph2></app-graph2>
+    </main>
+  </div>
 </div>

@@ -1,46 +1,61 @@
-/* navbar */
-.nav{
-    background-color: #0096C7;
+.navbar {
+    background: linear-gradient(135deg, #0096C7 0%, #0077b6 100%);
     color: white;
-    list-style: none;
-    font-weight: 500;
-    display:flex;
-    padding: 0.5rem 2%;
-    margin: 0;
-    font-size: 20px;
-}
-
-.link{
-    text-decoration: none;
-    color : inherit;
-    padding: 0 15px 0 15px;
-}
-
-/* pour retirer le soulignage bleu */
-a,
-a:visited,
-a:hover,
-a:focus,
-a:active {
-    text-decoration: none;
-    color: inherit;
-    outline: none;
-}
-
-
-.onglet{
-    padding: 2%;
-    margin-right:  20%;
-}
-
-.onglet1{
-    padding: 2%;
-    margin-left:  20%;
-}
-
-.ol{
     display: flex;
-    justify-content: left;
-    margin-right: 55%;
-    align-self: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.nav-logo {
+    height: 100px; /* Agrandissement léger (était à 80px) */
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.nav-logo:hover {
+    transform: scale(1.05);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 16px 20px;
+        gap: 16px;
+    }
 }
