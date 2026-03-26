@@ -15,10 +15,18 @@ import { FormsModule } from '@angular/forms';
 import { Chart } from 'chart.js/auto';
 import { ApiService } from '../../services/api';
 
-type TauxPauvrete = {
+type Region = {
+    code?: string;
+    nom?: string;
+    departements?: Array<{ code?: string; nom?: string }>;
+};
+
+type StatistiqueLogement = {
     departement?: { nom?: string; code?: string };
-    tauxPauvrete?: number | string | null;
-    taux_pauvrete?: number | string | null;
+    tauxLogementVacants?: number | string | null;
+    taux_logement_vacants?: number | string | null;
+    construction?: number | string | null;
+    nombreLogement?: number | string | null;
 };
 
 @Component({
@@ -31,11 +39,13 @@ type TauxPauvrete = {
 export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('tauxP') canvas?: ElementRef<HTMLCanvasElement>;
 
-    taux_pauvrete = signal<TauxPauvrete[]>([]);
-    taux_pauvreteFiltres = signal<TauxPauvrete[]>([]);
+    logements = signal<StatistiqueLogement[]>([]);
+    logementsFiltres = signal<StatistiqueLogement[]>([]);
+    regions = signal<Region[]>([]);
     departements = signal<any[]>([]);
     departementsFiltres = signal<any[]>([]);
     searchTerm = signal('');
+    selectedRegion = signal<Region | null>(null);
     selectedDepartement = signal<any | null>(null);
     errorMessage = signal<string | null>(null);
 
@@ -44,10 +54,16 @@ export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
     private chart: Chart | null = null;
 
     constructor() {
-        // Filtre recherche départements temps réel
+        // Filtre recherche départements + région
         effect(() => {
             const term = this.searchTerm().toLowerCase();
-            const all = this.departements();
+            let all = this.departements();
+
+            const region = this.selectedRegion();
+            if (region?.code) {
+                all = all.filter((dept) => this.extractRegionCode(dept) === region.code);
+            }
+
             this.departementsFiltres.set(
                 all.filter(dept =>
                     dept.nom?.toLowerCase().includes(term) ||
@@ -56,8 +72,9 @@ export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
             );
         });
 
-        // Mise à jour chart quand taux_pauvreteFiltres change
+        // Mise à jour du graphe selon les filtres
         effect(() => {
+            this.applyCombinedFilters();
             this.renderChart();
         });
     }
@@ -78,11 +95,27 @@ export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
             }
         });
 
-        // Réutilise l'endpoint existant logement qui expose aussi tauxPauvrete.
+        this.api.getRegions().subscribe({
+            next: (data) => {
+                const regionsRecues = Array.isArray(data)
+                    ? data
+                    : (data as any)?.['hydra:member'] || [];
+
+                this.regions.set(regionsRecues);
+            },
+            error: (err) => {
+                console.error('Erreur régions:', err);
+            }
+        });
+
         this.api.getLogements().subscribe({
             next: (data) => {
-                this.taux_pauvrete.set(data ?? []);
-                this.taux_pauvreteFiltres.set(data ?? []);
+                const logementsRecus = Array.isArray(data)
+                    ? data
+                    : (data as any)?.['hydra:member'] || [];
+
+                this.logements.set(logementsRecus);
+                this.logementsFiltres.set(logementsRecus);
                 this.cdr.detectChanges();
             },
             error: (err) => {
@@ -100,34 +133,79 @@ export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
         this.chart = null;
     }
 
+    onRegionChange(regionCode: string): void {
+        const region = this.regions().find((r) => r.code === regionCode) ?? null;
+        this.selectedRegion.set(region);
+
+        const currentDept = this.selectedDepartement();
+        if (currentDept?.code && region?.code && this.extractRegionCode(currentDept) !== region.code) {
+            this.selectedDepartement.set(null);
+        }
+    }
+
+    onDepartementChange(deptCode: string): void {
+        const dept = this.departements().find((d) => d.code === deptCode) ?? null;
+        this.selectedDepartement.set(dept);
+    }
+
     selectDepartement(dept: any): void {
         this.selectedDepartement.set(dept);
-        if (dept) {
-            this.taux_pauvreteFiltres.set(
-                this.taux_pauvrete().filter(t => t.departement?.code === dept.code)
-            );
-        } else {
-            this.taux_pauvreteFiltres.set(this.taux_pauvrete());
-        }
     }
 
     clearFilter(): void {
         this.searchTerm.set('');
+        this.selectedRegion.set(null);
         this.selectedDepartement.set(null);
-        this.taux_pauvreteFiltres.set(this.taux_pauvrete());
+        this.logementsFiltres.set(this.logements());
+    }
+
+    private applyCombinedFilters(): void {
+        let result = this.logements();
+
+        const selectedRegion = this.selectedRegion();
+        if (selectedRegion?.code) {
+            const deptCodesInRegion = this.departements()
+                .filter((dept) => this.extractRegionCode(dept) === selectedRegion.code)
+                .map((dept) => dept.code);
+
+            result = result.filter((item) => deptCodesInRegion.includes(item.departement?.code));
+        }
+
+        const selectedDept = this.selectedDepartement();
+        if (selectedDept?.code) {
+            result = result.filter((item) => item.departement?.code === selectedDept.code);
+        }
+
+        this.logementsFiltres.set(result);
     }
 
     private renderChart(): void {
         const canvas = this.canvas?.nativeElement;
-        const taux_pauvreteFiltres = this.taux_pauvreteFiltres().slice(0, 10);
+        const logementsFiltres = this.logementsFiltres().slice(0, 10);
 
-        if (!canvas || taux_pauvreteFiltres.length === 0) return;
+        if (!canvas || logementsFiltres.length === 0) return;
 
-        const labels = taux_pauvreteFiltres.map(
-            (taux) => taux.departement?.nom ?? 'N/A'
+        const labels = logementsFiltres.map((item) => {
+            const deptCode = item.departement?.code ?? '';
+            const deptName = item.departement?.nom ?? 'N/A';
+            const regionName = this.getRegionNameFromDepartementCode(item.departement?.code);
+            return `${deptCode} - ${deptName} / ${regionName}`;
+        });
+
+        const tauxLogementsVacants = logementsFiltres.map((item) =>
+            Number(item.tauxLogementVacants ?? item.taux_logement_vacants ?? 0)
         );
 
-        const taux_pauvrete = taux_pauvreteFiltres.map((taux) => Number(taux.tauxPauvrete ?? taux.taux_pauvrete ?? 0));
+        const constructionSurDisponible = logementsFiltres.map((item) => {
+            const construction = Number(item.construction ?? 0);
+            const nombreLogements = Number(item.nombreLogement ?? 0);
+
+            if (nombreLogements <= 0) {
+                return 0;
+            }
+
+            return Number(((construction / nombreLogements) * 100).toFixed(2));
+        });
 
         this.chart?.destroy();
         this.chart = new Chart(canvas, {
@@ -136,10 +214,17 @@ export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
                 labels,
                 datasets: [
                     {
-                        label: 'Taux de pauvreté',
-                        data: taux_pauvrete,
-                        backgroundColor: '#0096C7',
-                        borderColor: 'black',
+                        label: 'Taux de logements vacants (%)',
+                        data: tauxLogementsVacants,
+                        backgroundColor: '#1d4ed8',
+                        borderColor: '#1e3a8a',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Logements en construction / disponibles (%)',
+                        data: constructionSurDisponible,
+                        backgroundColor: '#10b981',
+                        borderColor: '#047857',
                         borderWidth: 1,
                     },
                 ],
@@ -165,9 +250,42 @@ export class Graph2 implements OnInit, AfterViewInit, OnDestroy {
                     },
                     y: {
                         beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Pourcentage (%)'
+                        }
                     },
                 },
             },
         });
+    }
+
+    private extractRegionCode(departement: any): string | undefined {
+        const codeRegion = departement?.codeRegion;
+
+        if (!codeRegion) {
+            return undefined;
+        }
+
+        if (typeof codeRegion === 'string') {
+            return codeRegion;
+        }
+
+        return codeRegion.code;
+    }
+
+    private getRegionNameFromDepartementCode(departementCode?: string): string {
+        if (!departementCode) {
+            return 'Région inconnue';
+        }
+
+        const departement = this.departements().find((d) => d.code === departementCode);
+        const regionCode = this.extractRegionCode(departement);
+
+        if (!regionCode) {
+            return 'Région inconnue';
+        }
+
+        return this.regions().find((r) => r.code === regionCode)?.nom ?? regionCode;
     }
 }

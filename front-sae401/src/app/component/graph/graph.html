@@ -1,4 +1,4 @@
-<h1 class="title">📊 Analyse Logements Sociaux</h1>
+<h1 class="title">📊 Taux de logements sociaux / taux de chômage par région</h1>
 
 <div class="layout">
   <!-- Sidebar filtres améliorée -->
@@ -71,7 +71,7 @@
         <span class="filter-tag">Département: {{ selectedDepartement()?.nom }}</span>
       </div>
       <span class="filter-count">
-        📈 {{ logementsFiltres().length }} logements affichés
+        📈 {{ logementsFiltres().length }} enregistrements disponibles
       </span>
       <ng-template #noFilter>
         <p style="color: #6b7280; font-style: italic;">Aucun filtre actif - Tous les logements</p>
@@ -94,7 +94,7 @@
             'Aucun résultat pour ces filtres' : 'Chargement des données...' }}
       </div>
       
-      <canvas #indicDemo *ngIf="logementsFiltres().length > 0" 
+      <canvas #indicDemo *ngIf="logementsFiltres().length > 0"
               width="800" height="400"></canvas>
     </div>
 

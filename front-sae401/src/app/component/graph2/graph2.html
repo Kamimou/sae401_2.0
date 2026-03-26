@@ -1,9 +1,29 @@
 <main class="page-container">
     
-    <h2 class="section-title">
-        Taux de pauvreté {{ selectedDepartement() ? '- ' + selectedDepartement()?.nom : '' }}
-        ({{ taux_pauvreteFiltres().length }})
+    <h2 class="title">
+        Taux de logements vacants + logements en construction/disponibles
+        {{ selectedRegion() ? ' - ' + selectedRegion()?.nom : '' }}
+        {{ selectedDepartement() ? ' / ' + selectedDepartement()?.nom : '' }}
+        ({{ logementsFiltres().length }})
     </h2>
+
+    <div class="search-container" style="max-width: 900px; margin: 0 auto 20px auto; display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px;">
+        <select class="search" [ngModel]="selectedRegion()?.code ?? ''" (ngModelChange)="onRegionChange($event)">
+            <option value="">Toutes les régions</option>
+            <option *ngFor="let region of regions()" [value]="region.code">
+                {{ region.nom }}
+            </option>
+        </select>
+
+        <select class="search" [ngModel]="selectedDepartement()?.code ?? ''" (ngModelChange)="onDepartementChange($event)">
+            <option value="">Tous les départements</option>
+            <option *ngFor="let dept of departementsFiltres()" [value]="dept.code">
+                {{ dept.code }} - {{ dept.nom }}
+            </option>
+        </select>
+
+        <button class="clear-btn" (click)="clearFilter()">Réinitialiser</button>
+    </div>
     
     <div class="container">
         
@@ -11,12 +31,12 @@
             Erreur : {{ errorMessage() }}
         </div>
         
-        <div *ngIf="!errorMessage() && taux_pauvreteFiltres().length === 0">
-            {{ searchTerm() || selectedDepartement() ? 'Aucun résultat' : 'Chargement...' }}
+        <div *ngIf="!errorMessage() && logementsFiltres().length === 0">
+            {{ selectedRegion() || selectedDepartement() ? 'Aucun résultat' : 'Chargement...' }}
         </div>
         
-        <diV *ngIf="!errorMessage() && taux_pauvreteFiltres().length > 0" class="chart-wrapper">
-            <canvas #tauxP width="350" height="350"></canvas>
+        <diV *ngIf="!errorMessage() && logementsFiltres().length > 0" class="chart-wrapper">
+            <canvas #tauxP width="450" height="450"></canvas>
         </diV>
     </div>
 </main>
