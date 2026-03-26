@@ -18,6 +18,10 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}/statistique/departement`);
   }
 
+  getRegions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/statistique/region`);
+  }
+
   getTauxPauvrete(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/statistique/taux_pauvrete`);
   }

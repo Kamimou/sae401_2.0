@@ -2,58 +2,89 @@
 <div class="layout">
   <aside class="sidebar">
     
-    <!-- Recherche -->
+    <!-- Recherche Région -->
     <div class="search-container">
       <input 
-      [ngModel]="searchTerm()" 
-      (ngModelChange)="searchTerm.set($event)"
-      class="search" 
-      placeholder="Rechercher département (nom ou code)" />
+        [ngModel]="searchRegionTerm()" 
+        (ngModelChange)="searchRegionTerm.set($event)"
+        class="search" 
+        placeholder="Rechercher région (nom ou code)" />
+    </div>
+    
+    <!-- Liste régions -->
+    <div class="departements-list">
+      <h4>Régions</h4>
+      <div *ngFor="let region of regionsFiltres()" 
+           (click)="selectRegion(region)"
+           [class.active]="selectedRegion()?.code === region.code"
+           class="departement-item region-item">
+        <strong>{{ region.code }}</strong> {{ region.nom }}
+      </div>
+      <div *ngIf="regionsFiltres().length === 0" class="no-results">
+        Aucune région trouvée
+      </div>
+    </div>
+    
+    <!-- Recherche Département -->
+    <div class="search-container">
+      <input 
+        [ngModel]="searchTerm()" 
+        (ngModelChange)="searchTerm.set($event)"
+        class="search" 
+        placeholder="Rechercher département (nom ou code)" />
     </div>
     
     <!-- Liste départements -->
     <div class="departements-list">
+      <h4>Départements</h4>
       <div *ngFor="let dept of departementsFiltres()" 
-      (click)="selectDepartement(dept)"
-      [class.active]="selectedDepartement()?.code === dept.code"
-      class="departement-item">
-      <strong>{{ dept.code }}</strong> {{ dept.nom }}
+           (click)="selectDepartement(dept)"
+           [class.active]="selectedDepartement()?.code === dept.code"
+           class="departement-item">
+        <strong>{{ dept.code }}</strong> {{ dept.nom }}
+      </div>
+      <div *ngIf="departementsFiltres().length === 0" class="no-results">
+        Aucun département trouvé
+      </div>
     </div>
-    <div *ngIf="departementsFiltres().length === 0" class="no-results">
-      Aucun département trouvé
-    </div>
-  </div>
-  
-  <button *ngIf="selectedDepartement() || searchTerm()" 
-  (click)="clearFilter()" 
-  class="clear-btn">
-  Tout afficher
-</button>
+    
+    <button *ngIf="selectedRegion() || selectedDepartement() || searchTerm() || searchRegionTerm()" 
+            (click)="clearFilters()" 
+            class="clear-btn">
+      Réinitialiser les filtres
+    </button>
 
-</aside>
+  </aside>
 
-<!-- Contenu principal -->
-<main class="page-container">
-  
-  <h2 class="section-title">
-    Logements {{ selectedDepartement() ? '- ' + selectedDepartement()?.nom : '' }}
-    ({{ logementsFiltres().length }})
-  </h2>
-  
-  <div class="container">
+  <!-- Contenu principal -->
+  <main class="page-container">
     
-    <div *ngIf="errorMessage()" class="error">
-      Erreur : {{ errorMessage() }}
+    <h2 class="section-title">
+      Logements 
+      <span *ngIf="selectedRegion()">
+        - Région: {{ selectedRegion()?.nom }} 
+      </span>
+      <span *ngIf="selectedDepartement()">
+        - Dépt: {{ selectedDepartement()?.nom }}
+      </span>
+      ({{ logementsFiltres().length }})
+    </h2>
+    
+    <div class="container">
+      
+      <div *ngIf="errorMessage()" class="error">
+        Erreur : {{ errorMessage() }}
+      </div>
+      
+      <div *ngIf="!errorMessage() && logementsFiltres().length === 0">
+        {{ (searchRegionTerm() || searchTerm() || selectedRegion() || selectedDepartement()) ? 'Aucun résultat' : 'Chargement...' }}
+      </div>
+      
+      <div *ngIf="!errorMessage() && logementsFiltres().length > 0" class="chart-wrapper">
+        <canvas #indicDemo width="400" height="350"></canvas>
+      </div>
     </div>
-    
-    <div *ngIf="!errorMessage() && logementsFiltres().length === 0">
-      {{ searchTerm() || selectedDepartement() ? 'Aucun résultat' : 'Chargement...' }}
-    </div>
-    
-    <diV *ngIf="!errorMessage() && logementsFiltres().length > 0" class="chart-wrapper">
-      <canvas #indicDemo width="350" height="350"></canvas>
-    </diV>
-  </div>
-  <app-graph2></app-graph2>
-</main>
+    <app-graph2></app-graph2>
+  </main>
 </div>
+

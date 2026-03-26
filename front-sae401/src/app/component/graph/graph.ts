@@ -16,8 +16,17 @@ import { Chart } from 'chart.js/auto';
 import { ApiService } from '../../services/api';
 import { Graph2 } from "../graph2/graph2";
 
+type Region = {
+    code?: string;
+    nom?: string;
+    departements?: any[];
+};
+
 type Logement = {
-    departement?: { nom?: string; code?: string };
+    departement?: { 
+        nom?: string; 
+        code?: string;
+    };
     nombreLogement?: number | string | null;
     construction?: number | string | null;
 };
@@ -36,8 +45,12 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
     logementsFiltres = signal<Logement[]>([]);
     departements = signal<any[]>([]);
     departementsFiltres = signal<any[]>([]);
+    regions = signal<Region[]>([]);
+    regionsFiltres = signal<Region[]>([]);
     searchTerm = signal('');
+    searchRegionTerm = signal('');
     selectedDepartement = signal<any | null>(null);
+    selectedRegion = signal<Region | null>(null);
     errorMessage = signal<string | null>(null);
     
     private api = inject(ApiService);
@@ -45,20 +58,41 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
     private chart: Chart | null = null;
     
     constructor() {
-        // Filtre recherche départements temps réel
+        // Filtre recherche régions
         effect(() => {
-            const term = this.searchTerm().toLowerCase();
-            const all = this.departements();
-            this.departementsFiltres.set(
-                all.filter(dept => 
-                    dept.nom?.toLowerCase().includes(term) || 
-                    dept.code?.toLowerCase().includes(term)
+            const term = this.searchRegionTerm().toLowerCase();
+            this.regionsFiltres.set(
+                this.regions().filter(r => 
+                    r.nom?.toLowerCase().includes(term) || 
+                    r.code?.toLowerCase().includes(term)
                 )
             );
         });
         
-        // Mise à jour chart quand logementsFiltres change
+        // Filtre recherche départements + filtre région
         effect(() => {
+            const term = this.searchTerm().toLowerCase();
+            let filtered = this.departements();
+            
+            // Recherche texte
+            filtered = filtered.filter(dept => 
+                dept.nom?.toLowerCase().includes(term) || 
+                dept.code?.toLowerCase().includes(term)
+            );
+            
+            // Filtre par région sélectionnée
+            const selRegion = this.selectedRegion();
+            if (selRegion?.departements) {
+                const deptCodesRegion = selRegion.departements.map((d: any) => d.code);
+                filtered = filtered.filter(dept => deptCodesRegion.includes(dept.code));
+            }
+            
+            this.departementsFiltres.set(filtered);
+        });
+        
+        // Filtre combiné + chart
+        effect(() => {
+            this.appliquerFiltresCombinés();
             this.renderChart();
         });
     }
@@ -67,28 +101,35 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
         // Load départements
         this.api.getDepartements().subscribe({
             next: (data) => {
-                const departementsRecus = Array.isArray(data)
-                ? data
-                : (data as any)?.['hydra:member'] || (data as any)?.departements || [];
-                
-                this.departements.set(departementsRecus);
-                this.departementsFiltres.set(departementsRecus);
+                const depts = Array.isArray(data) ? data : data?.['hydra:member'] || [];
+                this.departements.set(depts);
+                this.departementsFiltres.set(depts);
             },
-            error: (err) => {
-                console.error('Erreur départements:', err);
-            }
+            error: (err) => console.error('Erreur départements:', err)
         });
         
         // Load logements
         this.api.getLogements().subscribe({
             next: (data) => {
-                this.logements.set(data ?? []);
-                this.logementsFiltres.set(data ?? []);
+                const logementsData = Array.isArray(data) ? data : data?.['hydra:member'] || [];
+                this.logements.set(logementsData);
+                this.logementsFiltres.set(logementsData);
                 this.cdr.detectChanges();
             },
             error: (err) => {
                 this.errorMessage.set(err?.message ?? 'Erreur inconnue');
+            }
+        });
+        
+        // Load régions
+        this.api.getRegions().subscribe({
+            next: (data) => {
+                const regionsData = Array.isArray(data) ? data : data?.['hydra:member'] || [];
+                console.log('Régions API:', regionsData);
+                this.regions.set(regionsData);
+                this.regionsFiltres.set(regionsData);
             },
+            error: (err) => console.error('Erreur régions:', err)
         });
     }
     
@@ -98,38 +139,52 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
     
     ngOnDestroy(): void {
         this.chart?.destroy();
-        this.chart = null;
+    }
+    
+    selectRegion(region: Region): void {
+        this.selectedRegion.set(region);
     }
     
     selectDepartement(dept: any): void {
         this.selectedDepartement.set(dept);
-        if (dept) {
-            this.logementsFiltres.set(
-                this.logements().filter(l => l.departement?.code === dept.code)
-            );
-        } else {
-            this.logementsFiltres.set(this.logements());
-        }
     }
     
-    clearFilter(): void {
+    clearFilters(): void {
         this.searchTerm.set('');
+        this.searchRegionTerm.set('');
+        this.selectedRegion.set(null);
         this.selectedDepartement.set(null);
         this.logementsFiltres.set(this.logements());
     }
     
+    private appliquerFiltresCombinés(): void {
+        let result = this.logements();
+        
+        // Filtre région → départements de cette région
+        const selRegion = this.selectedRegion();
+        if (selRegion?.departements && selRegion.departements.length > 0) {
+            const deptCodes = selRegion.departements.map((d: any) => d.code);
+            result = result.filter(l => deptCodes.includes(l.departement?.code));
+        }
+        
+        // Filtre département
+        const selDept = this.selectedDepartement();
+        if (selDept?.code) {
+            result = result.filter(l => l.departement?.code === selDept.code);
+        }
+        
+        this.logementsFiltres.set(result);
+    }
+    
     private renderChart(): void {
         const canvas = this.canvas?.nativeElement;
-        const logementsFiltres = this.logementsFiltres().slice(0, 10);
+        const data = this.logementsFiltres().slice(0, 10);
         
-        if (!canvas || logementsFiltres.length === 0) return;
+        if (!canvas || data.length === 0) return;
         
-        const labels = logementsFiltres.map(
-            (logement) => logement.departement?.nom ?? 'N/A'
-        );
-        
-        const nombreLogements = logementsFiltres.map((logement) => Number(logement.nombreLogement ?? 0));
-        const constructions = logementsFiltres.map((logement) => Number(logement.construction ?? 0));
+        const labels = data.map(l => `${l.departement?.code ?? ''} - ${l.departement?.nom ?? 'N/A'}`);
+        const nombreLogements = data.map(l => Number(l.nombreLogement ?? 0));
+        const constructions = data.map(l => Number(l.construction ?? 0));
         
         this.chart?.destroy();
         this.chart = new Chart(canvas, {
@@ -141,43 +196,23 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
                         label: 'Nombre de logements',
                         data: nombreLogements,
                         backgroundColor: '#023E8A',
-                        borderColor: 'black',
-                        borderWidth: 1,
+                        borderWidth: 1
                     },
                     {
                         label: 'Construction',
                         data: constructions,
                         backgroundColor: '#0096C7',
-                        borderColor: 'black',
-                        borderWidth: 1,
-                    },
-                ],
+                        borderWidth: 1
+                    }
+                ]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                plugins: {
-                    tooltip: {
-                        mode: 'index',
-                    },
-                },
                 scales: {
-                    x: {
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 45,
-                        },
-                    },
-                    y: {
-                        beginAtZero: true,
-                    },
-                },
-            },
+                    x: { ticks: { maxRotation: 45 } },
+                    y: { beginAtZero: true }
+                }
+            }
         });
     }
 }
-
