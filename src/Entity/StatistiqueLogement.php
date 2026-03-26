@@ -30,10 +30,6 @@ class StatistiqueLogement
 
     #[ORM\Column(nullable: true)]
     #[Groups(['logement', 'departement', 'region'])]
-    private ?int $logementsMisEnLocation = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Groups(['logement', 'departement', 'region'])]
     private ?float $tauxPauvrete = null;
 
     #[ORM\Column(nullable: true)]
@@ -47,6 +43,18 @@ class StatistiqueLogement
     #[ORM\Column(nullable: true)]
     #[Groups(['logement', 'departement', 'region'])]
     private ?float $nombreHabitants = null;
+
+ #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
+    private ?float $tauxLogementVacants = null;
+
+ #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
+    private ?float $anneePublication = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['logement', 'departement', 'region'])]
+    private ?float $logementEnLocation = null;
 
     public function getId(): ?int
     {
@@ -144,4 +152,41 @@ class StatistiqueLogement
 
         return $this;
     }
+
+     public function getTauxLogementVacants(): ?float
+    {
+        return $this->tauxLogementVacants;
+    }
+
+    public function setTauxLogementVacants(?float $tauxLogementVacants): static
+    {
+        $this->tauxLogementVacants = $tauxLogementVacants;
+
+        return $this;
+    }
+
+     public function getAnneePublication(): ?float
+    {
+        return $this->anneePublication;
+    }
+
+    public function setAnneePublication(?float $anneePublication): static
+    {
+        $this->anneePublication = $anneePublication;
+
+        return $this;
+    }
+
+     public function getLogementEnLocation(): ?float
+    {
+        return $this->logementEnLocation;
+    }
+
+    public function setLogementEnLocation(?float $logementEnLocation): static
+    {
+        $this->logementEnLocation = $logementEnLocation;
+
+        return $this;
+    }
+
 }
