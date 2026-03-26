@@ -156,6 +156,19 @@ export class Graph implements OnInit, AfterViewInit, OnDestroy {
         this.selectedDepartement.set(null);
         this.logementsFiltres.set(this.logements());
     }
+
+    getTitreDynamique(): string {
+        let titre = 'Analyse Logements';
+        
+        if (this.selectedRegion()) {
+            titre += ` - ${this.selectedRegion()?.nom}`;
+        }
+        if (this.selectedDepartement()) {
+            titre += ` / ${this.selectedDepartement()?.nom}`;
+        }
+        
+        return titre;
+    }
     
     private appliquerFiltresCombinés(): void {
         let result = this.logements();
